@@ -7,6 +7,10 @@ public class Dungeon
     private int dungeonSizeX;
     private int dungeonSizeY;
 
+    private List<DungeonEntity> entities = new List<DungeonEntity>();
+
+    private DungeonVector2 startingPosition;
+
     private List<DungeonRoom> rooms = new List<DungeonRoom>();
 
     public void Build(int sizeX, int sizeY, DungeonTile defaultTile)
@@ -27,6 +31,11 @@ public class Dungeon
     public int SizeY
     {
         get { return dungeonSizeY; }
+    }
+
+    public DungeonVector2 StartingPosition
+    {
+        get { return startingPosition; }
     }
 
     public DungeonTile GetTile(int x, int y)
@@ -81,6 +90,13 @@ public class Dungeon
         return rooms[n];
     }
 
+    public bool CheckValidPosition(int x, int y)
+    {
+        return 
+            x >= 0 && x < dungeonSizeX &&
+            y >= 0 && y < dungeonSizeY;
+    }
+
     public bool CheckValidBounds(int x, int y, int sizeX, int sizeY)
     {
         return 
@@ -101,4 +117,36 @@ public class Dungeon
         return true;
     }
 
+    public void SetStartingPosition(int x, int y)
+    {
+        startingPosition.x = x;
+        startingPosition.y = y;
+    }
+
+    public void AddEntity(DungeonEntity entity, int x, int y)
+    {
+        if (!CheckValidPosition(x, y))
+            throw new ArgumentException("Invalid entity position");
+
+        entities.Add(entity);
+
+        entity.OnAddedToDungeon(this, new DungeonVector2(x, y));
+    }
+
+    public void RemoveEntity(DungeonEntity entity)
+    {
+        entity.OnRemovedFromDungeon();
+
+        entities.Remove(entity);
+    }
+
+    public int GetEntitiesCount()
+    {
+        return entities.Count;
+    }
+
+    public DungeonEntity GetEntity(int n)
+    {
+        return entities[n];
+    }
 }

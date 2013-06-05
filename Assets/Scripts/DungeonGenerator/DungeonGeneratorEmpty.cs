@@ -19,7 +19,11 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
             int roomSizeY = rnd.Next(2, (sizeY - roomY) - 1);
 
             if (dungeon.CheckSpaceType(roomX, roomY, roomSizeX, roomSizeY, DungeonTileType.Wall))
+            {
                 dungeon.AddRoom(roomX, roomY, roomSizeX, roomSizeY);
+
+                dungeon.SetStartingPosition(roomX + DungeonRoom.MIN_SIZE / 2, roomY +  + DungeonRoom.MIN_SIZE / 2);
+            }
         }
 
         return dungeon;

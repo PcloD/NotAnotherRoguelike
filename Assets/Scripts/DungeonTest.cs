@@ -13,9 +13,13 @@ public class DungeonTest : MonoBehaviour
 
     public void BuildDungeon()
     {
-        IDungeonGenerator generator = new DungeonGeneratorEmpty();
+        DungeonBuilder builder = new DungeonBuilder();
 
-        Dungeon dungeon = generator.BuildDungeon(sizeX, sizeY);
+        builder.BeginDungeon(sizeX, sizeY);
+
+        builder.AddEntities();
+
+        Dungeon dungeon = builder.GetDungeon();
 
         dungeonRenderer.DrawDungeon(dungeon);
     }
