@@ -1,0 +1,221 @@
+fileFormatVersion: 2
+guid: 7bfe746dfc81ba542843f719b4112882
+ModelImporter:
+  serializedVersion: 15
+  fileIDToRecycleName:
+    100000: Armature
+    100002: axe
+    100004: back
+    100006: Camera
+    100008: cap
+    100010: foot_L
+    100012: foot_R
+    100014: forearm_L
+    100016: forearm_R
+    100018: hand_L
+    100020: hand_R
+    100022: head
+    100024: heel_L
+    100026: heel_R
+    100028: hips
+    100030: Lamp
+    100032: lk_foot_L
+    100034: lk_foot_R
+    100036: Mesh
+    100038: //RootNode
+    100040: neck
+    100042: ribs
+    100044: shin_L
+    100046: shin_R
+    100048: shoulder_L
+    100050: shoulder_R
+    100052: spine
+    100054: thigh_L
+    100056: thigh_R
+    100058: toe_L
+    100060: toe_R
+    100062: upper_arm_L
+    100064: upper_arm_R
+    400000: Armature
+    400002: axe
+    400004: back
+    400006: Camera
+    400008: cap
+    400010: foot_L
+    400012: foot_R
+    400014: forearm_L
+    400016: forearm_R
+    400018: hand_L
+    400020: hand_R
+    400022: head
+    400024: heel_L
+    400026: heel_R
+    400028: hips
+    400030: Lamp
+    400032: lk_foot_L
+    400034: lk_foot_R
+    400036: Mesh
+    400038: //RootNode
+    400040: neck
+    400042: ribs
+    400044: shin_L
+    400046: shin_R
+    400048: shoulder_L
+    400050: shoulder_R
+    400052: spine
+    400054: thigh_L
+    400056: thigh_R
+    400058: toe_L
+    400060: toe_R
+    400062: upper_arm_L
+    400064: upper_arm_R
+    4300000: Mesh
+    4300002: back
+    4300004: cap
+    4300006: axe
+    7400000: Default Take
+    7400002: idle
+    9500000: //RootNode
+    13700000: axe
+    13700002: back
+    13700004: cap
+    13700006: Mesh
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    animationCompression: 1
+    animationRotationError: .5
+    animationPositionError: .5
+    animationScaleError: .5
+    animationWrapMode: 0
+    clipAnimations:
+    - name: idle
+      takeName: idle
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Armature
+        weight: 1
+      - path: Armature/hips
+        weight: 1
+      - path: Armature/hips/spine
+        weight: 1
+      - path: Armature/hips/spine/ribs
+        weight: 1
+      - path: Armature/hips/spine/ribs/neck
+        weight: 1
+      - path: Armature/hips/spine/ribs/neck/head
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_L
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_L/upper_arm_L
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_L/upper_arm_L/forearm_L
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_L/upper_arm_L/forearm_L/hand_L
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_R
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_R/upper_arm_R
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_R/upper_arm_R/forearm_R
+        weight: 1
+      - path: Armature/hips/spine/ribs/shoulder_R/upper_arm_R/forearm_R/hand_R
+        weight: 1
+      - path: Armature/hips/thigh_L
+        weight: 1
+      - path: Armature/hips/thigh_L/shin_L
+        weight: 1
+      - path: Armature/hips/thigh_R
+        weight: 1
+      - path: Armature/hips/thigh_R/shin_R
+        weight: 1
+      - path: Armature/lk_foot_L
+        weight: 1
+      - path: Armature/lk_foot_L/foot_L
+        weight: 1
+      - path: Armature/lk_foot_L/foot_L/toe_L
+        weight: 1
+      - path: Armature/lk_foot_L/heel_L
+        weight: 1
+      - path: Armature/lk_foot_R
+        weight: 1
+      - path: Armature/lk_foot_R/foot_R
+        weight: 1
+      - path: Armature/lk_foot_R/foot_R/toe_R
+        weight: 1
+      - path: Armature/lk_foot_R/heel_R
+        weight: 1
+      - path: axe
+        weight: 1
+      - path: back
+        weight: 1
+      - path: Camera
+        weight: 1
+      - path: cap
+        weight: 1
+      - path: Lamp
+        weight: 1
+      - path: Mesh
+        weight: 1
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 1
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+  tangentSpace:
+    normalSmoothAngle: 60
+    splitTangentsAcrossUV: 1
+    normalImportMode: 1
+    tangentImportMode: 1
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    human: []
+    skeleton: []
+    handles: []
+    armTwist: .5
+    foreArmTwist: .5
+    upperLegTwist: .5
+    legTwist: .5
+    armStretch: .0500000007
+    legStretch: .0500000007
+    feetSpacing: 0
+    rootMotionBoneName: 
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  additionalBone: 1
+  animationType: 2
+  userData: 
