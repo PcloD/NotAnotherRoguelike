@@ -4,7 +4,7 @@ public class DungeonTest : MonoBehaviour
 {
     public int sizeX = 64;
     public int sizeY = 64;
-    public DungeonRendererUnity dungeonRenderer;
+    public DungeonUnity dungeonUnity;
 
     public void Start()
     {
@@ -21,12 +21,14 @@ public class DungeonTest : MonoBehaviour
 
         Dungeon dungeon = builder.GetDungeon();
 
-        dungeonRenderer.DrawDungeon(dungeon);
+        dungeonUnity.SetDungeon(dungeon);
     }
 
     public void OnGUI()
     {
-        if (GUILayout.Button("Rebuild Dungeon"))
+        int size = Mathf.Max(Screen.width, Screen.height) / 10;
+
+        if (GUI.Button(new Rect(10, 10, size * 2, size), "Rebuild Dungeon"))
         {
             BuildDungeon();
         }

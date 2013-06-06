@@ -22,7 +22,7 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
             {
                 dungeon.AddRoom(roomX, roomY, roomSizeX, roomSizeY);
 
-                dungeon.SetStartingPosition(roomX + DungeonRoom.MIN_SIZE / 2, roomY +  + DungeonRoom.MIN_SIZE / 2);
+                dungeon.SetStartingPosition(new DungeonVector2(roomX + DungeonRoom.MIN_SIZE / 2, roomY +  + DungeonRoom.MIN_SIZE / 2));
             }
         }
 

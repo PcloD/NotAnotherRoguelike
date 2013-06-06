@@ -13,6 +13,10 @@ public class Dungeon
 
     private List<DungeonRoom> rooms = new List<DungeonRoom>();
 
+    private IDungeonListener dungeonListener;
+
+    private int nextEntityId;
+
     public void Build(int sizeX, int sizeY, DungeonTile defaultTile)
     {
         this.dungeonSizeX = sizeX;
@@ -117,10 +121,9 @@ public class Dungeon
         return true;
     }
 
-    public void SetStartingPosition(int x, int y)
+    public void SetStartingPosition(DungeonVector2 position)
     {
-        startingPosition.x = x;
-        startingPosition.y = y;
+        startingPosition = position;
     }
 
     public void AddEntity(DungeonEntity entity, int x, int y)
@@ -130,7 +133,7 @@ public class Dungeon
 
         entities.Add(entity);
 
-        entity.OnAddedToDungeon(this, new DungeonVector2(x, y));
+        entity.OnAddedToDungeon(this, new DungeonVector2(x, y), nextEntityId++);
     }
 
     public void RemoveEntity(DungeonEntity entity)
@@ -148,5 +151,16 @@ public class Dungeon
     public DungeonEntity GetEntity(int n)
     {
         return entities[n];
+    }
+
+    public void ReportDungeonEvent(DungeonEvent dungeonEvent)
+    {
+        if (dungeonListener != null)
+            dungeonListener.OnDungeonEvent(dungeonEvent);
+    }
+
+    public void SetDungeonListener(IDungeonListener dungeonListener)
+    {
+        this.dungeonListener = dungeonListener;
     }
 }
