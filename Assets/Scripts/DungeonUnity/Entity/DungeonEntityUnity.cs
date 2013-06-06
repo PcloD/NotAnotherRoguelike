@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class DungeonEntityUnity : MonoBehaviour
 {
+    [HideInInspector]
     public Transform trans;
+
+    [HideInInspector]
     public DungeonUnity dungeonUnity;
+
     public DungeonEntity entity;
 
     public void Awake()

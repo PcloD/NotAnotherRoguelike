@@ -67,16 +67,12 @@ public class Dungeon
         if (!CheckSpaceType(x, y, sizeX, sizeY, DungeonTileType.Wall))
             throw new ArgumentException("Invalid room bounds (can't replace non-wall tiles)");
 
-        DungeonRoom room = new DungeonRoom();
-
-        room.x = x;
-        room.y = y;
-        room.sizeX = sizeX;
-        room.sizeY = sizeY;
+        DungeonRoom room = new DungeonRoom(this, x, y, sizeX, sizeY);
 
         rooms.Add(room);
 
         DungeonTile roomTile = new DungeonTile();
+
         roomTile.type = DungeonTileType.Room;
 
         SetTile(x, y, sizeX, sizeY, roomTile);
@@ -124,6 +120,18 @@ public class Dungeon
     public void SetStartingPosition(DungeonVector2 position)
     {
         startingPosition = position;
+    }
+
+    public void AddEntity(DungeonEntityType entityType, int x, int y)
+    {
+        if (!CheckValidPosition(x, y))
+            throw new ArgumentException("Invalid entity position");
+
+        DungeonEntity entity = new DungeonEntity(entityType);
+
+        entities.Add(entity);
+
+        entity.OnAddedToDungeon(this, new DungeonVector2(x, y), nextEntityId++);
     }
 
     public void AddEntity(DungeonEntity entity, int x, int y)

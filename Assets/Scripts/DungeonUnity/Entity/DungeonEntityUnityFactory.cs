@@ -3,6 +3,7 @@ using UnityEngine;
 public class DungeonEntityUnityFactory : MonoBehaviour
 {
     public GameObject avatarPrefab;
+    public GameObject lightPrefab;
 
     public DungeonEntityUnity CreateEntity(DungeonEntity entity)
     {
@@ -10,6 +11,9 @@ public class DungeonEntityUnityFactory : MonoBehaviour
         {
             case DungeonEntityType.Avatar:
                 return ((GameObject)GameObject.Instantiate(avatarPrefab)).GetComponent<DungeonEntityUnity>();
+
+            case DungeonEntityType.Light:
+                return ((GameObject)GameObject.Instantiate(lightPrefab)).GetComponent<DungeonEntityUnity>();
         }
 
         return null;

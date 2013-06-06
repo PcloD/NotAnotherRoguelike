@@ -12,10 +12,18 @@ public class DungeonBuilder
         dungeon = generator.BuildDungeon(sizeX, sizeY);
     }
 
+    public void Decorate()
+    {
+        IRoomDecorator roomDecorator = new RoomDecoratorLights();
+
+        for (int i = 0; i < dungeon.GetRoomsCount(); i++)
+            roomDecorator.DecorateRoom(dungeon.GetRoom(i));
+    }
+
     public void AddEntities()
     {
         dungeon.AddEntity(
-            new DungeonEntity(DungeonEntityType.Avatar), 
+            DungeonEntityType.Avatar, 
             dungeon.StartingPosition.x,
             dungeon.StartingPosition.y);
     }

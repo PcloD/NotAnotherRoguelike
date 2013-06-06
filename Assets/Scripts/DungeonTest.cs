@@ -17,6 +17,8 @@ public class DungeonTest : MonoBehaviour
 
         builder.BeginDungeon(sizeX, sizeY);
 
+        builder.Decorate();
+
         builder.AddEntities();
 
         Dungeon dungeon = builder.GetDungeon();
