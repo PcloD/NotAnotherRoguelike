@@ -1,6 +1,6 @@
 using System;
 
-public class DungeonEntity
+public abstract class DungeonEntity
 {
     private int id;
     private Dungeon dungeon;
@@ -54,9 +54,6 @@ public class DungeonEntity
     public bool CanMoveTo(DungeonVector2 position)
     {
         if (!dungeon.CheckValidPosition(position.x, position.y))
-            return false;
-
-        if (dungeon.GetTile(position.x, position.y).type == DungeonTileType.Wall)
             return false;
 
         return true;

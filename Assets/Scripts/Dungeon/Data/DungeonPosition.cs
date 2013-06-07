@@ -24,12 +24,30 @@ public struct DungeonVector2
         return (x << 16) | y;
     }
 
+    public DungeonRotation GetRotation()
+    {
+        if (x == 0)
+        {
+            if (y >= 0)
+                return DungeonRotation.North;
+            else
+                return DungeonRotation.South;
+        }
+        else // if (y == 0)
+        {
+            if (x > 0)
+                return DungeonRotation.East;
+            else
+                return DungeonRotation.West;
+        }
+    }
+
     static public DungeonVector2 Forward
     {
         get { return new DungeonVector2(0, 1); }
     }
 
-    static public DungeonVector2 Backward
+    static public DungeonVector2 Back
     {
         get { return new DungeonVector2(0, -1); }
     }
@@ -63,6 +81,7 @@ public struct DungeonVector2
     {
         return a.x == b.x && a.y == b.y;
     }
+
 }
 
 

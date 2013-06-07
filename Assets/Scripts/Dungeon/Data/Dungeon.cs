@@ -127,7 +127,10 @@ public class Dungeon
         if (!CheckValidPosition(x, y))
             throw new ArgumentException("Invalid entity position");
 
-        DungeonEntity entity = new DungeonEntity(entityType);
+        DungeonEntity entity = DungeonEntityFactory.CreateEntity(entityType);
+
+        if (entity == null)
+            throw new ArgumentException("Unknown entity type " + entityType);
 
         entities.Add(entity);
 

@@ -25,7 +25,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     private DungeonEventQueue dungeonEventsQueue = new DungeonEventQueue();
     private DungeonEventHandlerUnity currentDungeonEventHandler;
 
-    private DungeonEntityUnity avatarUnity;
+    private DungeonEntityAvatar avatar;
 
     public void SetDungeon(Dungeon dungeon)
     {
@@ -58,8 +58,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
             if (entity.Type == DungeonEntityType.Avatar)
             {
-                avatarUnity = entityUnity;
-                entityCamera.entity = avatarUnity;
+                avatar = (DungeonEntityAvatar) entityUnity.entity;
+                entityCamera.entity = entityUnity;
             }
         }
         else
@@ -212,28 +212,24 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
             return;
 
         //No input handling if no avatar is available
-        if (!avatarUnity)
+        if (avatar == null)
             return;
 
-        if (horizontal > 0 && avatarUnity.entity.CanMove(DungeonVector2.Right))
+        if (horizontal > 0)
         {
-            avatarUnity.entity.Rotate(DungeonRotation.East);
-            avatarUnity.entity.Move(DungeonVector2.Right);
+            avatar.Walk(DungeonVector2.Right);
         }
-        else if (horizontal < 0 && avatarUnity.entity.CanMove(DungeonVector2.Left))
+        else if (horizontal < 0)
         {
-            avatarUnity.entity.Rotate(DungeonRotation.West);
-            avatarUnity.entity.Move(DungeonVector2.Left);
+            avatar.Walk(DungeonVector2.Left);
         }
-        else if (vertical > 0 && avatarUnity.entity.CanMove(DungeonVector2.Forward))
+        else if (vertical > 0)
         {
-            avatarUnity.entity.Rotate(DungeonRotation.North);
-            avatarUnity.entity.Move(DungeonVector2.Forward);
+            avatar.Walk(DungeonVector2.Forward);
         }
-        else if (vertical < 0 && avatarUnity.entity.CanMove(DungeonVector2.Backward))
+        else if (vertical < 0)
         {
-            avatarUnity.entity.Rotate(DungeonRotation.South);
-            avatarUnity.entity.Move(DungeonVector2.Backward);
+            avatar.Walk(DungeonVector2.Back);
         }
     }
 
