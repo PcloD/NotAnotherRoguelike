@@ -2,7 +2,7 @@ using System;
 
 public class DungeonRoom
 {
-    public const int MIN_SIZE = 3;
+    public const int MIN_SIZE = 4;
 
     private Dungeon dungeon;
 
@@ -74,12 +74,12 @@ public class DungeonRoom
             y >= 0 && sizeY >= 0 && y + sizeY < roomSizeY;
     }
 
-    public void AddEntity(DungeonEntityType entityType, int x, int y)
+    public void AddEntity(DungeonEntityType entityType, int x, int y, DungeonRotation rotation)
     {
         //if (!CheckValidPosition(x, y))
         //    throw new ArgumentException("Invalid entity position in room");
 
-        dungeon.AddEntity(entityType, roomPositionX + x, roomPositionY + y);
+        dungeon.AddEntity(entityType, roomPositionX + x, roomPositionY + y, rotation);
     }
 
     

@@ -6,7 +6,7 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
     {
         Dungeon dungeon = new Dungeon();
 
-        dungeon.Build(sizeX, sizeY, DungeonTile.WallTile);
+        dungeon.Init(sizeX, sizeY, DungeonTile.WallTile);
 
         Random rnd = new Random();
 
@@ -15,8 +15,8 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
             int roomX = rnd.Next(1, sizeX - DungeonRoom.MIN_SIZE - 1);
             int roomY = rnd.Next(1, sizeY - DungeonRoom.MIN_SIZE - 1);
 
-            int roomSizeX = rnd.Next(2, (sizeX - roomX) - 1);
-            int roomSizeY = rnd.Next(2, (sizeY - roomY) - 1);
+            int roomSizeX = rnd.Next(DungeonRoom.MIN_SIZE, (sizeX - roomX) - 1);
+            int roomSizeY = rnd.Next(DungeonRoom.MIN_SIZE, (sizeY - roomY) - 1);
 
             if (dungeon.CheckSpaceType(roomX, roomY, roomSizeX, roomSizeY, DungeonTileType.Wall))
             {

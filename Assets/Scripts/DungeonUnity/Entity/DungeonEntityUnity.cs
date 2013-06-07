@@ -10,7 +10,7 @@ public class DungeonEntityUnity : MonoBehaviour
 
     public DungeonEntity entity;
 
-    public void Awake()
+    public virtual void Awake()
     {
         trans = transform;
     }
@@ -21,6 +21,7 @@ public class DungeonEntityUnity : MonoBehaviour
         this.entity = entity;
 
         trans.position = dungeonUnity.GetWorldPosition(entity.Position);
+        trans.rotation = dungeonUnity.GetWorldRotation(entity.Rotation);
     }
 }
 

@@ -3,6 +3,7 @@ using System;
 public struct DungeonTile
 {
     public DungeonTileType type;
+    public bool visible;
 
     static public DungeonTile WallTile
     {

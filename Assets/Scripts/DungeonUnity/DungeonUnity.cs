@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class DungeonUnity : MonoBehaviour, IDungeonListener
 {
+    public GameObject shadowPrefab;
     public GameObject floorPrefab;
     public GameObject wallPrefab;
 
@@ -14,9 +15,16 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
     private List<GameObject> floorTiles = new List<GameObject>();
     private List<GameObject> wallTiles = new List<GameObject>();
+    private GameObject[] shadowTiles;
 
     private List<GameObject> floorTilesPool = new List<GameObject>();
     private List<GameObject> wallTilesPool = new List<GameObject>();
+    private List<GameObject> shadowTilesPool = new List<GameObject>();
+
+    private Transform shadowTilesContainer;
+    private Transform floorTilesContainer;
+    private Transform wallTilesContainer;
+    private Transform entitiesContainer;
 
     private Dictionary<int, DungeonEntityUnity> entities = new Dictionary<int, DungeonEntityUnity>();
 
@@ -26,6 +34,29 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     private DungeonEventHandlerUnity currentDungeonEventHandler;
 
     private DungeonEntityAvatar avatar;
+
+    public void Awake()
+    {
+        shadowTilesContainer = new GameObject("ShadowTiles").transform;
+        shadowTilesContainer.parent = transform;
+        shadowTilesContainer.localPosition = Vector3.zero;
+        shadowTilesContainer.localRotation = Quaternion.identity;
+
+        floorTilesContainer = new GameObject("FloorTiles").transform;
+        floorTilesContainer.parent = transform;
+        floorTilesContainer.localPosition = Vector3.zero;
+        floorTilesContainer.localRotation = Quaternion.identity;
+
+        wallTilesContainer = new GameObject("WallTiles").transform;
+        wallTilesContainer.parent = transform;
+        wallTilesContainer.localPosition = Vector3.zero;
+        wallTilesContainer.localRotation = Quaternion.identity;
+
+        entitiesContainer = new GameObject("Entities").transform;
+        entitiesContainer.parent = transform;
+        entitiesContainer.localPosition = Vector3.zero;
+        entitiesContainer.localRotation = Quaternion.identity;
+    }
 
     public void SetDungeon(Dungeon dungeon)
     {
@@ -38,6 +69,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         AddTiles();
 
         AddEntities();
+
+        UpdateVisibility();
     }
 
     private void AddEntities()
@@ -52,6 +85,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
         if (entityUnity != null)
         {
+            entityUnity.trans.parent = entitiesContainer;
+
             entities.Add(entity.Id, entityUnity);
 
             entityUnity.Init(this, entity);
@@ -97,7 +132,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
                 if (floorTilesPool.Count == 0)
                 {
                     floor = (GameObject)GameObject.Instantiate(floorPrefab, floorPosition, Quaternion.identity);
-                    floor.transform.parent = trans;
+                    floor.transform.parent = floorTilesContainer;
                 }
                 else
                 {
@@ -117,7 +152,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
                         if (wallTilesPool.Count == 0)
                         {
                             wall = (GameObject)GameObject.Instantiate(wallPrefab, wallPosition, Quaternion.identity);
-                            wall.transform.parent = trans;
+                            wall.transform.parent = wallTilesContainer;
                         }
                         else
                         {
@@ -159,6 +194,20 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
         //Clear events queue
         dungeonEventsQueue.Clear();
+
+        if (shadowTiles != null)
+        {
+            for (int i = 0; i < shadowTiles.Length; i++)
+            {
+                if (shadowTiles[i])
+                {
+                    shadowTilesPool.Add(shadowTiles[i]);
+                    shadowTiles[i].SetActive(false);
+                }
+            }
+
+            shadowTiles = null;
+        }
 
         currentDungeonEventHandler = null;
 
@@ -215,22 +264,21 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         if (avatar == null)
             return;
 
+        if (horizontal == 0 && vertical == 0)
+            return;
+
         if (horizontal > 0)
-        {
             avatar.Walk(DungeonVector2.Right);
-        }
         else if (horizontal < 0)
-        {
             avatar.Walk(DungeonVector2.Left);
-        }
         else if (vertical > 0)
-        {
             avatar.Walk(DungeonVector2.Forward);
-        }
         else if (vertical < 0)
-        {
             avatar.Walk(DungeonVector2.Back);
-        }
+
+        dungeon.UpdateVisibility();
+
+        UpdateVisibility();
     }
 
     private void UpdateEventsQueue()
@@ -262,6 +310,11 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         return new Vector3(position.x, 0, position.y);
     }
 
+    public Vector3 GetWorldPosition(int x, int y)
+    {
+        return new Vector3(x, 0, y);
+    }
+
     public Quaternion GetWorldRotation(DungeonRotation rotation)
     {
         switch (rotation)
@@ -277,6 +330,54 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         }
 
         return Quaternion.identity;
+    }
+
+    private void UpdateVisibility()
+    {
+        if (shadowTiles == null)
+            shadowTiles = new GameObject[dungeon.SizeX * dungeon.SizeY];
+
+        for (int x = 0; x < dungeon.SizeX; x++)
+        {
+            for (int y = 0; y < dungeon.SizeY; y++)
+            {
+                int shadowTileIndex = x + y * dungeon.SizeX;
+
+                DungeonTile tile = dungeon.GetTile(x, y);
+
+                if (tile.visible || tile.type == DungeonTileType.Wall)
+                {
+                    if (shadowTiles[shadowTileIndex])
+                    {
+                        //Shadow active in newly visible tile, remove it!
+                        shadowTiles[shadowTileIndex].SetActive(false);
+                        shadowTilesPool.Add(shadowTiles[shadowTileIndex]);
+                        shadowTiles[shadowTileIndex] = null;
+                    }
+                }
+                else
+                {
+                    if (!shadowTiles[shadowTileIndex])
+                    {
+                        //No shadow in invisible tile, add it
+                        if (shadowTilesPool.Count > 0)
+                        {
+                            shadowTiles[shadowTileIndex] = shadowTilesPool[shadowTilesPool.Count - 1];
+                            shadowTilesPool.RemoveAt(shadowTilesPool.Count - 1);
+
+                            shadowTiles[shadowTileIndex].SetActive(true);
+                        }
+                        else
+                        {
+                            shadowTiles[shadowTileIndex] = (GameObject)GameObject.Instantiate(shadowPrefab);
+                            shadowTiles[shadowTileIndex].transform.parent = shadowTilesContainer;
+                        }
+
+                        shadowTiles[shadowTileIndex].transform.position = GetWorldPosition(x, y);
+                    }
+                }
+            }
+        }
     }
 }
 

@@ -25,11 +25,14 @@ public class DungeonBuilder
         dungeon.AddEntity(
             DungeonEntityType.Avatar, 
             dungeon.StartingPosition.x,
-            dungeon.StartingPosition.y);
+            dungeon.StartingPosition.y, 
+            DungeonRotation.North);
     }
 
     public Dungeon GetDungeon()
     {
+        dungeon.UpdateVisibility();
+
         Dungeon toReturn = dungeon;
 
         dungeon = null;;

@@ -8,6 +8,8 @@ public class DungeonTest : MonoBehaviour
 
     public void Start()
     {
+        RenderSettings.ambientLight = new Color(0.01f, 0.01f, 0.01f);
+
         BuildDungeon();
     }
 
@@ -31,8 +33,15 @@ public class DungeonTest : MonoBehaviour
         int size = Mathf.Max(Screen.width, Screen.height) / 10;
 
         if (GUI.Button(new Rect(10, 10, size * 2, size), "Rebuild Dungeon"))
-        {
             BuildDungeon();
+
+        if (GUI.Button(new Rect(Screen.width - size - 10, 10, size, size), "Light"))
+        {
+            if (RenderSettings.ambientLight == Color.white)
+                RenderSettings.ambientLight = new Color(0.01f, 0.01f, 0.01f);
+            else
+                RenderSettings.ambientLight = Color.white;
+
         }
     }
 }

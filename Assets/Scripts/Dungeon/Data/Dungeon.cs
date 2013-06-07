@@ -13,11 +13,13 @@ public class Dungeon
 
     private List<DungeonRoom> rooms = new List<DungeonRoom>();
 
+    private DungeonVisibilityAlgorithm visibilityAlgorithm = new DungeonVisibilityAlgorithm();
+
     private IDungeonListener dungeonListener;
 
     private int nextEntityId;
 
-    public void Build(int sizeX, int sizeY, DungeonTile defaultTile)
+    public void Init(int sizeX, int sizeY, DungeonTile defaultTile)
     {
         this.dungeonSizeX = sizeX;
         this.dungeonSizeY = sizeY;
@@ -50,6 +52,11 @@ public class Dungeon
     public void SetTile(int x, int y, DungeonTile tile)
     {
         tiles[x + y * dungeonSizeX] = tile;
+    }
+
+    public void SetTileVisible(int x, int y, bool visible)
+    {
+        tiles[x + y * dungeonSizeX].visible = visible;
     }
 
     public void SetTile(int x, int y, int sizeX, int sizeY, DungeonTile tile)
@@ -122,29 +129,24 @@ public class Dungeon
         startingPosition = position;
     }
 
-    public void AddEntity(DungeonEntityType entityType, int x, int y)
+    public void AddEntity(DungeonEntityType entityType, int x, int y, DungeonRotation rotation)
     {
-        if (!CheckValidPosition(x, y))
-            throw new ArgumentException("Invalid entity position");
-
         DungeonEntity entity = DungeonEntityFactory.CreateEntity(entityType);
 
         if (entity == null)
             throw new ArgumentException("Unknown entity type " + entityType);
 
-        entities.Add(entity);
-
-        entity.OnAddedToDungeon(this, new DungeonVector2(x, y), nextEntityId++);
+        AddEntity(entity, x, y, rotation);
     }
 
-    public void AddEntity(DungeonEntity entity, int x, int y)
+    public void AddEntity(DungeonEntity entity, int x, int y, DungeonRotation rotation)
     {
         if (!CheckValidPosition(x, y))
             throw new ArgumentException("Invalid entity position");
 
         entities.Add(entity);
 
-        entity.OnAddedToDungeon(this, new DungeonVector2(x, y), nextEntityId++);
+        entity.OnAddedToDungeon(this, new DungeonVector2(x, y), rotation, nextEntityId++);
     }
 
     public void RemoveEntity(DungeonEntity entity)
@@ -173,5 +175,17 @@ public class Dungeon
     public void SetDungeonListener(IDungeonListener dungeonListener)
     {
         this.dungeonListener = dungeonListener;
+    }
+
+    public void UpdateVisibility()
+    {
+        visibilityAlgorithm.Reset(this);
+        for (int i = 0; i < GetEntitiesCount(); i++)
+        {
+            DungeonEntity entity = GetEntity(i);
+
+            if (entity.Type == DungeonEntityType.Avatar)
+                visibilityAlgorithm.SetVisible(this, entity.Position.x, entity.Position.y, 999);
+        }
     }
 }

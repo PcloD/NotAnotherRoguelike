@@ -13,6 +13,11 @@ public abstract class DungeonEntity
         get { return position; }
     }
 
+    public DungeonRotation Rotation
+    {
+        get { return rotation; }
+    }
+
     public Dungeon Dungeon
     {
         get { return dungeon; }
@@ -33,10 +38,11 @@ public abstract class DungeonEntity
         this.type = type;
     }
 
-    internal void OnAddedToDungeon(Dungeon dungeon, DungeonVector2 position, int id)
+    internal void OnAddedToDungeon(Dungeon dungeon, DungeonVector2 position, DungeonRotation rotation, int id)
     {
         this.dungeon = dungeon;
         this.position = position;
+        this.rotation = rotation;
         this.id = id;
     }
 
@@ -89,6 +95,11 @@ public abstract class DungeonEntity
 
             dungeon.ReportDungeonEvent(DungeonEventFactory.CreateEntityRotated(this, oldRotation, newRotation));
         }
+    }
+
+    public bool IsVisible()
+    {
+        return dungeon.GetTile(Position.x, Position.y).visible;
     }
 }
 
