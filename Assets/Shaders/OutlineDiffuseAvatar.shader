@@ -41,7 +41,7 @@ Shader "Outlined/Silhouetted Avatar"
 	SubShader {
 	
 		//fdangelo: Dont use transparent queue, works better when the Avatar is built by multiple meshes
-		Tags { "Queue" = "Geometry+1" } 
+		Tags { "Queue" = "Geometry+10" } 
 
 		// note that a vertex shader is specified here but its using the one above
 		Pass {

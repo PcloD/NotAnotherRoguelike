@@ -8,6 +8,7 @@ Shader "Custom/ShadowTile"
 	SubShader 
 	{
 		Cull back
+		Tags { "Queue" = "Geometry+5" } 
 		
 		//Draw SOLID transparent pixels
    		Pass 
