@@ -5,6 +5,7 @@ public class DungeonTest : MonoBehaviour
     public int sizeX = 64;
     public int sizeY = 64;
     public DungeonUnity dungeonUnity;
+    public RoomDecoratorUnity roomDecorator;
 
     public void Start()
     {
@@ -17,11 +18,13 @@ public class DungeonTest : MonoBehaviour
     {
         DungeonBuilder builder = new DungeonBuilder();
 
-        builder.BeginDungeon(sizeX, sizeY);
+        builder.BeginDungeon();
 
-        builder.Decorate();
+        builder.SetSize(sizeX, sizeY);
+        builder.SetGenerator(new DungeonGeneratorEmpty());
+        builder.SetRoomDecorator(roomDecorator);
 
-        builder.AddEntities();
+        builder.Build();
 
         Dungeon dungeon = builder.GetDungeon();
 

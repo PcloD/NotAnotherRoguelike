@@ -24,7 +24,7 @@ public struct DungeonTile
             tile.type = DungeonTileType.Wall;
             tile.solid = true;
             tile.walkable = false;
-            tile.wallNorth = tile.wallSouth = tile.wallEast = tile.wallWest = "wall";
+            tile.wallNorth = tile.wallSouth = tile.wallEast = tile.wallWest = "rock";
             tile.ceiling = "ceiling";
 
             return tile;
@@ -39,7 +39,7 @@ public struct DungeonTile
             tile.type = DungeonTileType.Empty;
             tile.solid = false;
             tile.walkable = true;
-            tile.floor = "floor";
+            tile.floor = "stone";
 
             return tile;
         }

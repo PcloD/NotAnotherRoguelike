@@ -4,24 +4,38 @@ public class DungeonBuilder
 {
     private Dungeon dungeon;
     private IDungeonGenerator generator;
+    private IRoomDecorator roomDecorator;
 
-    public void BeginDungeon(int sizeX, int sizeY)
+    private int sizeX;
+    private int sizeY;
+
+    public void BeginDungeon()
     {
-        generator = new DungeonGeneratorEmpty();
-
-        dungeon = generator.BuildDungeon(sizeX, sizeY);
     }
 
-    public void Decorate()
+    public void SetSize(int sizeX, int sizeY)
     {
-        IRoomDecorator roomDecorator = new RoomDecoratorLights();
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+    }
+
+    public void SetGenerator(IDungeonGenerator generator)
+    {
+        this.generator = generator;
+    }
+
+    public void SetRoomDecorator(IRoomDecorator roomDecorator)
+    {
+        this.roomDecorator = roomDecorator;
+    }
+
+    public void Build()
+    {
+        dungeon = generator.BuildDungeon(sizeX, sizeY);
 
         for (int i = 0; i < dungeon.GetRoomsCount(); i++)
             roomDecorator.DecorateRoom(dungeon.GetRoom(i));
-    }
 
-    public void AddEntities()
-    {
         dungeon.AddEntity(
             DungeonEntityType.Avatar, 
             dungeon.StartingPosition.x,
@@ -35,8 +49,10 @@ public class DungeonBuilder
 
         Dungeon toReturn = dungeon;
 
-        dungeon = null;;
+        dungeon = null;
         generator = null;
+        roomDecorator = null;
+        sizeX = sizeY = 0;
 
         return toReturn;
     }
