@@ -128,7 +128,7 @@ public class Dungeon
         startingPosition = position;
     }
 
-    public void AddEntity(DungeonEntityType entityType, int x, int y, DungeonRotation rotation)
+    public DungeonEntity AddEntity(DungeonEntityType entityType, int x, int y, DungeonRotation rotation)
     {
         DungeonEntity entity = DungeonEntityFactory.CreateEntity(entityType);
 
@@ -136,6 +136,8 @@ public class Dungeon
             throw new ArgumentException("Unknown entity type " + entityType);
 
         AddEntity(entity, x, y, rotation);
+
+        return entity;
     }
 
     public void AddEntity(DungeonEntity entity, int x, int y, DungeonRotation rotation)

@@ -6,5 +6,3 @@ public enum DungeonEntityType
     Avatar = 1,
     Light = 2
 }
-
-
