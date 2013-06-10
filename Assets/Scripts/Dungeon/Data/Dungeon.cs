@@ -78,8 +78,7 @@ public class Dungeon
 
         rooms.Add(room);
 
-        DungeonTile roomTile = new DungeonTile();
-
+        DungeonTile roomTile = DungeonTile.EmptyTile;
         roomTile.type = DungeonTileType.Room;
 
         SetTile(x, y, sizeX, sizeY, roomTile);

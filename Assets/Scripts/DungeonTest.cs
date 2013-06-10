@@ -8,7 +8,7 @@ public class DungeonTest : MonoBehaviour
 
     public void Start()
     {
-        RenderSettings.ambientLight = new Color(0.01f, 0.01f, 0.01f);
+        RenderSettings.ambientLight = new Color32(67, 67, 67, 255);
 
         BuildDungeon();
     }
@@ -38,7 +38,7 @@ public class DungeonTest : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - size - 10, 10, size, size), "Light"))
         {
             if (RenderSettings.ambientLight == Color.white)
-                RenderSettings.ambientLight = new Color(0.01f, 0.01f, 0.01f);
+                RenderSettings.ambientLight = new Color32(67, 67, 67, 255);
             else
                 RenderSettings.ambientLight = Color.white;
 

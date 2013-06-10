@@ -21,14 +21,20 @@ public class DungeonVisibilityAlgorithm
 
                 if (Math.Abs(dx) + Math.Abs(dy) <= lightRadius)
                 {
-                    if (IsVisible(dungeon, lightX, lightY, x, y))
+                    if (IsVisible(dungeon, lightX, lightY, x, y, 50, 50) ||
+                        IsVisible(dungeon, lightX, lightY, x, y, 0, 0) ||
+                        IsVisible(dungeon, lightX, lightY, x, y, 0, 99) ||
+                        IsVisible(dungeon, lightX, lightY, x, y, 99, 99) ||
+                        IsVisible(dungeon, lightX, lightY, x, y, 99, 0))
+                    {
                         dungeon.SetTileVisible(x, y, true);
+                    }
                 }
             }
         }
     }
 
-    public bool IsVisible(Dungeon dungeon, int fromX, int fromY, int toX, int toY)
+    public bool IsVisible(Dungeon dungeon, int fromX, int fromY, int toX, int toY, int offsetX = 50, int offsetY = 50)
     {
         int steps;
         int deltaX = toX - fromX;
@@ -44,8 +50,8 @@ public class DungeonVisibilityAlgorithm
         if (steps == 0)
             return(true);
 
-        initX = fromX * 100 + 50;
-        initY = fromY * 100 + 50;
+        initX = fromX * 100 + offsetX;
+        initY = fromY * 100 + offsetY;
 
         deltaY *= 100;
         deltaX *= 100;
@@ -59,7 +65,7 @@ public class DungeonVisibilityAlgorithm
 
             if (visible)
             {
-                if (dungeon.GetTile(tileX, tileY).type == DungeonTileType.Wall)
+                if (dungeon.GetTile(tileX, tileY).solid)
                     visible = false;
             }
             else

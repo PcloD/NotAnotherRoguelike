@@ -17,7 +17,7 @@ public class DungeonEntityAvatar : DungeonEntity
         if (!Dungeon.CheckValidPosition(position.x, position.y))
             return false;
 
-        if (Dungeon.GetTile(position.x, position.y).type == DungeonTileType.Wall)
+        if (!Dungeon.GetTile(position.x, position.y).walkable)
             return false;
 
         return true;

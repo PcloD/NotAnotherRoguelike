@@ -7,5 +7,3 @@ public enum DungeonRotation
     East, //Right!
     West, //Left!
 }
-
-
