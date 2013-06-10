@@ -2,6 +2,8 @@ using System;
 
 public class DungeonGeneratorEmpty : IDungeonGenerator
 {
+    private const int MAX_ROOM_SIZE = 12;
+
     public Dungeon BuildDungeon(int sizeX, int sizeY)
     {
         Dungeon dungeon = new Dungeon();
@@ -16,8 +18,8 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
             int roomX = rnd.Next(1, sizeX - DungeonRoom.MIN_SIZE - 1);
             int roomY = rnd.Next(1, sizeY - DungeonRoom.MIN_SIZE - 1);
 
-            int roomSizeX = rnd.Next(DungeonRoom.MIN_SIZE, (sizeX - roomX) - 1);
-            int roomSizeY = rnd.Next(DungeonRoom.MIN_SIZE, (sizeY - roomY) - 1);
+            int roomSizeX = rnd.Next(DungeonRoom.MIN_SIZE, Math.Min((sizeX - roomX) - 1, MAX_ROOM_SIZE));
+            int roomSizeY = rnd.Next(DungeonRoom.MIN_SIZE, Math.Min((sizeY - roomY) - 1, MAX_ROOM_SIZE));
 
             if (dungeon.CheckSpaceType(roomX - 1, roomY - 1, roomSizeX + 2, roomSizeY + 2, DungeonTileType.Wall))
             {

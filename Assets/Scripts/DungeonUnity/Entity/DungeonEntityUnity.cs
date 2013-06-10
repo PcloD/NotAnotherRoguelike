@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class DungeonEntityUnity : MonoBehaviour
 {
+    public DungeonEntityType entityType;
+
     [HideInInspector]
     public Transform trans;
 
