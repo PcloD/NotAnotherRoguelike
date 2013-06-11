@@ -1,0 +1,21 @@
+# List of Vertices, with (x,y,z[,w]) coordinates, w is optional and defaults to 1.0.
+v -0.5 0 -0.5
+v -0.5 0 0.5
+v 0.5 0 0.5
+v 0.5 0 -0.5
+
+# Texture coordinates, in (u ,v [,w]) coordinates, these will vary between 0 and 1, w is optional and default to 0.
+vt 0 1
+vt 0 0
+vt 1 0
+vt 1 1
+
+# Normals in (x,y,z) form; normals might not be unit.
+vn 0 1 0
+vn 0 1 0
+vn 0 1 0
+vn 0 1 0
+
+# Face Definitions
+f 1/1/1 2/2/2 3/3/3
+f 3/3/3 4/4/4 1/1/1

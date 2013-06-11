@@ -18,6 +18,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     private Transform shadowTilesContainer;
     private Transform tilesContainer;
     private Transform entitiesContainer;
+    private Transform combinedTilesContainer;
 
     private Dictionary<int, DungeonEntityUnity> entities = new Dictionary<int, DungeonEntityUnity>();
 
@@ -43,6 +44,11 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         entitiesContainer.parent = transform;
         entitiesContainer.localPosition = Vector3.zero;
         entitiesContainer.localRotation = Quaternion.identity;
+
+        combinedTilesContainer = new GameObject("CombinedTiles").transform;
+        combinedTilesContainer.parent = transform;
+        combinedTilesContainer.localPosition = Vector3.zero;
+        combinedTilesContainer.localRotation = Quaternion.identity;
     }
 
     public void SetDungeon(Dungeon dungeon)
@@ -103,6 +109,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     {
         tiles = new DungeonTileUnity[dungeon.SizeX * dungeon.SizeY];
 
+        //Create tiles
         for (int x = 0; x < dungeon.SizeX; x++)
         {
             for (int y = 0; y < dungeon.SizeY; y++)
@@ -116,6 +123,108 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
                 tileUnity.Init(this, new DungeonVector2(x, y), tile);
 
                 tiles[x + y * dungeon.SizeX] = tileUnity;
+            }
+        }
+
+        //Combine tiles
+        CombineTiles(8);
+
+        //Return tiles
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (tiles[i])
+            {
+                tilesPool.ReturnTile(tiles[i]);
+                tiles[i] = null;
+            }
+        }
+    }
+
+    private List<MeshFilter> tmpMeshes = new List<MeshFilter>(1024);
+    private Dictionary<Material, List<MeshFilter>> tmpMeshesByMaterial = new Dictionary<Material, List<MeshFilter>>();
+
+    private void CombineTiles(int groupSize)
+    {
+        for (int gx = 0; gx < dungeon.SizeX; gx += groupSize)
+        {
+            for (int gy = 0; gy < dungeon.SizeY; gy += groupSize)
+            {
+                GameObject groupGO = new GameObject("Group-" + gx + "-" + gy);
+                groupGO.transform.parent = combinedTilesContainer;
+                groupGO.transform.localPosition = Vector3.zero;
+                groupGO.transform.localRotation = Quaternion.identity;
+
+                //Get all the mesh filters in the subgroup
+                tmpMeshes.Clear();
+
+                for (int x = gx; x < gx + groupSize; x++)
+                {
+                    for (int y = gy; y < gy + groupSize; y++)
+                    {
+                        DungeonTileUnity tile = tiles[x + y * dungeon.SizeY];
+
+                        if (tile)
+                        {
+                            if (tile.ceiling)
+                                tmpMeshes.Add(tile.ceiling.GetComponent<MeshFilter>());
+                            if (tile.floor)
+                                tmpMeshes.Add(tile.floor.GetComponent<MeshFilter>());
+                            if (tile.wallEast)
+                                tmpMeshes.Add(tile.wallEast.GetComponent<MeshFilter>());
+                            if (tile.wallNorth)
+                                tmpMeshes.Add(tile.wallNorth.GetComponent<MeshFilter>());
+                            if (tile.wallSouth)
+                                tmpMeshes.Add(tile.wallSouth.GetComponent<MeshFilter>());
+                            if (tile.wallWest)
+                                tmpMeshes.Add(tile.wallWest.GetComponent<MeshFilter>());
+                        }
+                    }
+                }
+
+                //Group meshes by material
+                tmpMeshesByMaterial.Clear();
+
+                for (int i = 0; i < tmpMeshes.Count; i++)
+                {
+                    Material material = tmpMeshes[i].renderer.sharedMaterial;
+
+                    if (!tmpMeshesByMaterial.ContainsKey(material))
+                        tmpMeshesByMaterial[material] = new List<MeshFilter>();
+
+                    tmpMeshesByMaterial[material].Add(tmpMeshes[i]);
+                }
+
+                //Combine meshes by material
+                foreach (Material material in tmpMeshesByMaterial.Keys)
+                {
+                    List<MeshFilter> materialMeshes = tmpMeshesByMaterial[material];
+
+                    CombineInstance[] combine = new CombineInstance[materialMeshes.Count];
+
+                    for (int i = 0; i < materialMeshes.Count; i++)
+                    {
+                        //Add combine info
+                        combine[i].mesh = materialMeshes[i].sharedMesh;
+                        combine[i].transform = materialMeshes[i].transform.localToWorldMatrix;
+                    }
+
+                    //Combine mesh
+                    Mesh combinedMesh = new Mesh();
+                    combinedMesh.CombineMeshes(combine);
+
+                    //Create game object with MesFilter / MeshRenderer to draw the combined mesh
+                    GameObject combinedMeshGO = new GameObject("Combined-" + material.name);
+
+                    combinedMeshGO.transform.parent = groupGO.transform;
+                    combinedMeshGO.transform.localPosition = Vector3.zero;
+                    combinedMeshGO.transform.localRotation = Quaternion.identity;
+
+                    MeshFilter combinedMeshFilter = combinedMeshGO.AddComponent<MeshFilter>();
+                    MeshRenderer combinedMeshRenderer = combinedMeshGO.AddComponent<MeshRenderer>();
+
+                    combinedMeshFilter.sharedMesh = combinedMesh;
+                    combinedMeshRenderer.sharedMaterial = material;
+                }
             }
         }
     }
@@ -156,6 +265,9 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
             dungeon.SetDungeonListener(null);
             dungeon = null;
         }
+
+        for (int i = combinedTilesContainer.childCount - 1; i >= 0; i--)
+            GameObject.Destroy(combinedTilesContainer.GetChild(i).gameObject);
     }
 
     public bool IsBusy()
@@ -234,7 +346,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
                 DungeonTile tile = dungeon.GetTile(x, y);
 
-                tiles[tileIndex].UpdateVisiblity();
+                if (tiles[tileIndex])
+                    tiles[tileIndex].UpdateVisiblity();
 
                 if (tile.visible || tile.solid)
                 {
