@@ -4,19 +4,16 @@ using System.Collections.Generic;
 
 public class DungeonUnity : MonoBehaviour, IDungeonListener
 {
-    public GameObject shadowPrefab;
-
     public DungeonEntityUnityFactory entityFactory;
     public DungeonEventHandlerUnityFactory eventHandlerFactory;
     public DungeonTileUnityPool tilesPool;
     public DungeonTileSideUnityFactory tilesSideFactory;
+    public DungeonShadowUnityPool shadowTilesPool;
 
-    public CameraFollowEntity entityCamera;
+    public Dungeon dungeon;
 
     private DungeonTileUnity[] tiles;
-
-    private List<GameObject> shadowTilesPool = new List<GameObject>();
-    private GameObject[] shadowTiles;
+    private DungeonShadowUnity[] shadowTiles;
 
     private Transform shadowTilesContainer;
     private Transform tilesContainer;
@@ -24,12 +21,11 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
     private Dictionary<int, DungeonEntityUnity> entities = new Dictionary<int, DungeonEntityUnity>();
 
-    public Dungeon dungeon;
-
     private DungeonEventQueue dungeonEventsQueue = new DungeonEventQueue();
     private DungeonEventHandlerUnity currentDungeonEventHandler;
 
-    private DungeonEntityAvatar avatar;
+    [HideInInspector]
+    public DungeonEntityAvatarUnity avatar;
 
     public void Awake()
     {
@@ -52,6 +48,10 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     public void SetDungeon(Dungeon dungeon)
     {
         Clear();
+
+        //Reset dungeon container to default position befor initializing
+        transform.position = Vector3.zero;
+        transform.rotation = Quaternion.identity;
 
         this.dungeon = dungeon;
 
@@ -83,10 +83,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
             entityUnity.Init(this, entity);
 
             if (entity.Type == DungeonEntityType.Avatar)
-            {
-                avatar = (DungeonEntityAvatar) entityUnity.entity;
-                entityCamera.entity = entityUnity;
-            }
+                avatar = (DungeonEntityAvatarUnity) entityUnity;
         }
         else
         {
@@ -104,11 +101,6 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
 
     private void AddTiles()
     {
-        Transform trans = transform;
-
-        trans.position = Vector3.zero;
-        trans.rotation = Quaternion.identity;
-
         tiles = new DungeonTileUnity[dungeon.SizeX * dungeon.SizeY];
 
         for (int x = 0; x < dungeon.SizeX; x++)
@@ -134,10 +126,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         if (tiles != null)
         {
             for (int i = 0; i < tiles.Length; i++)
-            {
                 if (tiles[i])
                     tilesPool.ReturnTile(tiles[i]);
-            }
             tiles = null;
         }
 
@@ -153,20 +143,19 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         if (shadowTiles != null)
         {
             for (int i = 0; i < shadowTiles.Length; i++)
-            {
                 if (shadowTiles[i])
-                {
-                    shadowTilesPool.Add(shadowTiles[i]);
-                    shadowTiles[i].SetActive(false);
-                }
-            }
+                    shadowTilesPool.ReturnShadowTile(shadowTiles[i]);
 
             shadowTiles = null;
         }
 
         currentDungeonEventHandler = null;
 
-        dungeon = null;
+        if (dungeon != null)
+        {
+            dungeon.SetDungeonListener(null);
+            dungeon = null;
+        }
     }
 
     public bool IsBusy()
@@ -177,63 +166,6 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     public void Update()
     {
         UpdateEventsQueue();
-
-        UpdatePlayerInput();
-    }
-
-    private void UpdatePlayerInput()
-    {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        MoveAvatar(horizontal, vertical);
-    }
-
-    public void OnGUI()
-    {
-        float bottom = Screen.height - 10;
-        float left = 10;
-        float size = (int) (Mathf.Max(Screen.width, Screen.height) / 10);
-        float space = size / 6;
-
-        if (GUI.RepeatButton(new Rect(left, bottom - size, size, size), "Left"))
-            MoveAvatar(-1, 0);
-
-        if (GUI.RepeatButton(new Rect(left + (size + space) * 1, bottom - size, size, size), "Down"))
-            MoveAvatar(0, -1);
-
-        if (GUI.RepeatButton(new Rect(left + (size + space) * 2, bottom - size, size, size), "Right"))
-            MoveAvatar(1, 0);
-
-        if (GUI.RepeatButton(new Rect(left + (size + space) * 1, bottom - (size + space) * 1 - size, size, size), "Up"))
-            MoveAvatar(0, 1);
-    }
-
-    private void MoveAvatar(float horizontal, float vertical)
-    {
-        //No input handling while the dungeon is updating
-        if (IsBusy())
-            return;
-
-        //No input handling if no avatar is available
-        if (avatar == null)
-            return;
-
-        if (horizontal == 0 && vertical == 0)
-            return;
-
-        if (horizontal > 0)
-            avatar.Walk(DungeonVector2.Right);
-        else if (horizontal < 0)
-            avatar.Walk(DungeonVector2.Left);
-        else if (vertical > 0)
-            avatar.Walk(DungeonVector2.Forward);
-        else if (vertical < 0)
-            avatar.Walk(DungeonVector2.Back);
-
-        dungeon.UpdateVisibility();
-
-        UpdateVisibility();
     }
 
     private void UpdateEventsQueue()
@@ -287,10 +219,12 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         return Quaternion.identity;
     }
 
-    private void UpdateVisibility()
+    public void UpdateVisibility()
     {
+        dungeon.UpdateVisibility();
+
         if (shadowTiles == null)
-            shadowTiles = new GameObject[dungeon.SizeX * dungeon.SizeY];
+            shadowTiles = new DungeonShadowUnity[dungeon.SizeX * dungeon.SizeY];
 
         for (int x = 0; x < dungeon.SizeX; x++)
         {
@@ -306,9 +240,8 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
                 {
                     if (shadowTiles[tileIndex])
                     {
-                        //Shadow active in newly visible tile, remove it!
-                        shadowTiles[tileIndex].SetActive(false);
-                        shadowTilesPool.Add(shadowTiles[tileIndex]);
+                        //Shadow active in visible tile, remove it!
+                        shadowTilesPool.ReturnShadowTile(shadowTiles[tileIndex]);
                         shadowTiles[tileIndex] = null;
                     }
                 }
@@ -317,20 +250,9 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
                     if (!shadowTiles[tileIndex])
                     {
                         //No shadow in invisible tile, add it
-                        if (shadowTilesPool.Count > 0)
-                        {
-                            shadowTiles[tileIndex] = shadowTilesPool[shadowTilesPool.Count - 1];
-                            shadowTilesPool.RemoveAt(shadowTilesPool.Count - 1);
-
-                            shadowTiles[tileIndex].SetActive(true);
-                        }
-                        else
-                        {
-                            shadowTiles[tileIndex] = (GameObject)GameObject.Instantiate(shadowPrefab);
-                            shadowTiles[tileIndex].transform.parent = shadowTilesContainer;
-                        }
-
-                        shadowTiles[tileIndex].transform.position = GetWorldPosition(x, y);
+                        shadowTiles[tileIndex] = shadowTilesPool.GetShadowTile();
+                        shadowTiles[tileIndex].trans.parent = shadowTilesContainer;
+                        shadowTiles[tileIndex].trans.position = GetWorldPosition(x, y);
                     }
                 }
             }

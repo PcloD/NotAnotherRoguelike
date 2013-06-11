@@ -3,15 +3,13 @@ using System.Collections.Generic;
 
 public class DungeonTileUnityPool : MonoBehaviour
 {
-    private Transform poolContainer;
+    private Transform trans;
+
     private List<DungeonTileUnity> pool = new List<DungeonTileUnity>(1024);
 
     public void Awake()
     {
-        poolContainer = new GameObject("TilePool").transform;
-        poolContainer.parent = transform;
-        poolContainer.localPosition = Vector3.zero;
-        poolContainer.localRotation = Quaternion.identity;
+        trans = transform;
     }
 
     public DungeonTileUnity GetTile()
@@ -37,7 +35,7 @@ public class DungeonTileUnityPool : MonoBehaviour
     {
         tile.Clear();
         tile.go.SetActive(false);
-        tile.trans.parent = poolContainer;
+        tile.trans.parent = trans;
 
         pool.Add(tile);
     }

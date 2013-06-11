@@ -17,7 +17,7 @@ public class DungeonEntityUnity : MonoBehaviour
         trans = transform;
     }
 
-    public void Init(DungeonUnity dungeonUnity, DungeonEntity entity)
+    public virtual void Init(DungeonUnity dungeonUnity, DungeonEntity entity)
     {
         this.dungeonUnity = dungeonUnity;
         this.entity = entity;

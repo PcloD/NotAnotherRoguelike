@@ -5,7 +5,7 @@ public class DungeonTileSideUnityFactory : MonoBehaviour
 {
     public DungeonTileSideUnity[] sidesPrefabs;
 
-    private Transform poolContainer;
+    private Transform trans;
 
     private Dictionary<string, GameObject> sidesPrefabsDictionary;
 
@@ -13,10 +13,7 @@ public class DungeonTileSideUnityFactory : MonoBehaviour
 
     public void Awake()
     {
-        poolContainer = new GameObject("SidePool").transform;
-        poolContainer.parent = transform;
-        poolContainer.localPosition = Vector3.zero;
-        poolContainer.localRotation = Quaternion.identity;
+        trans = transform;
 
         sidesPrefabsDictionary = new Dictionary<string, GameObject>();
         for (int i = 0; i < sidesPrefabs.Length; i++)
@@ -65,7 +62,7 @@ public class DungeonTileSideUnityFactory : MonoBehaviour
             pool.Add(side.id, sidePool);
         }
 
-        side.trans.parent = poolContainer;
+        side.trans.parent = trans;
         side.go.SetActive(false);
         sidePool.Add(side);
     }
