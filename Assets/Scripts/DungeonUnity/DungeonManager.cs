@@ -4,13 +4,16 @@ public class DungeonManager : MonoBehaviour
 {
     private const float MOVE_CAMERA_TIME = 1.0f;
     private const float COLLAPSE_TIME = 1.0f;
-    private const float ROTATE_PAGE_TIME = 1.0f;
+    private const float ROTATE_PAGE_TIME = 1.5f;
 
     private enum BuildingDungeonNiceState
     {
         MOVING_CAMERA_AWAY,
         COLLAPSING_OLD,
-        CREATING_NEW,
+        CREATING_NEW_1,
+        CREATING_NEW_2,
+        CREATING_NEW_3,
+        CREATING_NEW_4,
         TURNING_PAGE,
         EXPANDING_NEW,
         MOVING_CAMERA_IN
@@ -71,45 +74,7 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    public void OnGUI()
-    {
-        if (buildingDungeonNice)
-            return;
-
-        int size = Mathf.Max(Screen.width, Screen.height) / 10;
-
-        if (GUI.Button(new Rect(10, 10, size, size), "New"))
-            BuildDungeon(true);
-
-        if (GUI.Button(new Rect(10 + size + 10, 10, size, size), "New Nice"))
-        {
-            BuildDungeonNice();
-        }
-
-        if (GUI.Button(new Rect(Screen.width - size - 10, Screen.height - size - 10, size, size), "Camera"))
-        {
-            if (cameraFollowEntity.gameObject.activeSelf)
-            {
-                cameraFollowEntity.gameObject.SetActive(false);
-                cameraMap.gameObject.SetActive(true);
-            }
-            else
-            {
-                cameraFollowEntity.gameObject.SetActive(true);
-                cameraMap.gameObject.SetActive(false);
-            }
-        }
-
-        if (GUI.Button(new Rect(Screen.width - size - 10, 10, size, size), "Light"))
-        {
-            if (RenderSettings.ambientLight == Color.white)
-                RenderSettings.ambientLight = new Color32(67, 67, 67, 255);
-            else
-                RenderSettings.ambientLight = Color.white;
-        }
-    }
-
-    private void BuildDungeonNice()
+    public void BuildDungeonNiceAnimation()
     {
         buildingDungeonNice = true;
 
@@ -118,8 +83,7 @@ public class DungeonManager : MonoBehaviour
 
         cameraFollowEntity.entity = null;
 
-        SwitchToState(BuildingDungeonNiceState.MOVING_CAMERA_AWAY);
-
+        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_AWAY);
     }
 
     public void Update()
@@ -130,20 +94,25 @@ public class DungeonManager : MonoBehaviour
             {
                 case BuildingDungeonNiceState.MOVING_CAMERA_AWAY:
                     if (buildingDungeonNiceTime > MOVE_CAMERA_TIME)
-                        SwitchToState(BuildingDungeonNiceState.COLLAPSING_OLD);
+                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.COLLAPSING_OLD);
                     break;
 
                 case BuildingDungeonNiceState.COLLAPSING_OLD:
                     dungeonUnity.transform.localScale = new Vector3(1.0f, Mathf.Max(0.0f, 1.0f - buildingDungeonNiceTime / COLLAPSE_TIME), 1.0f);
-                    dungeonUnity.transform.position = new Vector3(0.0f, -buildingDungeonNiceTime / COLLAPSE_TIME, 0.0f);
+                    dungeonUnity.transform.position = new Vector3(0.0f, -(buildingDungeonNiceTime / COLLAPSE_TIME) * 0.5f, 0.0f);
                     if (dungeonUnity.transform.localScale.y == 0.0f)
                     {
                         dungeonUnity.gameObject.SetActive(false);
-                        SwitchToState(BuildingDungeonNiceState.CREATING_NEW);
+                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_1);
                     }
                     break;
 
-                case BuildingDungeonNiceState.CREATING_NEW:
+                case BuildingDungeonNiceState.CREATING_NEW_1:
+                    //Wait 1 frame
+                    SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_2);
+                    break;
+
+                case BuildingDungeonNiceState.CREATING_NEW_2:
                     dungeonUnity.gameObject.SetActive(true);
                     dungeonUnity.transform.localScale = Vector3.one;
                     dungeonUnity.transform.position = Vector3.zero;
@@ -152,11 +121,19 @@ public class DungeonManager : MonoBehaviour
 
                     dungeonUnity.gameObject.SetActive(false);
                     dungeonUnity.transform.localScale = new Vector3(1.0f, 0.0f, 1.0f);
-                    dungeonUnity.transform.position = new Vector3(0.0f, -1.0f, 0.0f);
+                    dungeonUnity.transform.position = new Vector3(0.0f, -0.5f, 0.0f);
 
+                    SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_3);
+                    break;
+
+                case BuildingDungeonNiceState.CREATING_NEW_3:
                     dungeonBook.DrawNewDungeon(dungeonUnity.dungeon);
+                    SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_4);
+                    break;
 
-                    SwitchToState(BuildingDungeonNiceState.TURNING_PAGE);
+                case BuildingDungeonNiceState.CREATING_NEW_4:
+                    //Wait 1 frame
+                    SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.TURNING_PAGE);
                     break;
 
                 case BuildingDungeonNiceState.TURNING_PAGE:
@@ -166,15 +143,15 @@ public class DungeonManager : MonoBehaviour
                         buildingDungeonNiceTime / ROTATE_PAGE_TIME);
 
                     if (buildingDungeonNiceTime >= ROTATE_PAGE_TIME)
-                        SwitchToState(BuildingDungeonNiceState.EXPANDING_NEW);
+                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.EXPANDING_NEW);
                     break;
 
                 case BuildingDungeonNiceState.EXPANDING_NEW:
                     dungeonUnity.gameObject.SetActive(true);
                     dungeonUnity.transform.localScale = new Vector3(1.0f, Mathf.Min(1.0f, buildingDungeonNiceTime / COLLAPSE_TIME), 1.0f);
-                    dungeonUnity.transform.position = new Vector3(0.0f, Mathf.Min(0.0f, buildingDungeonNiceTime / COLLAPSE_TIME - 1.0f), 0.0f);
+                    dungeonUnity.transform.position = new Vector3(0.0f, Mathf.Min(0.0f, (buildingDungeonNiceTime / COLLAPSE_TIME) * 0.5f - 0.5f), 0.0f);
                     if (dungeonUnity.transform.localScale.y == 1.0f)
-                        SwitchToState(BuildingDungeonNiceState.MOVING_CAMERA_IN);
+                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_IN);
                     break;
 
                 case BuildingDungeonNiceState.MOVING_CAMERA_IN:
@@ -192,24 +169,12 @@ public class DungeonManager : MonoBehaviour
         }
     }
 
-    private void SwitchToState(BuildingDungeonNiceState newState)
+    private void SwitchBuildingDungeonNiceState(BuildingDungeonNiceState newState)
     {
         switch (newState)
         {
             case BuildingDungeonNiceState.MOVING_CAMERA_AWAY:
-                cameraFollowEntity.AnimateTo(new Vector3(8, 30, 4), new Vector3(16, 0, 16), MOVE_CAMERA_TIME);
-                break;
-
-            case BuildingDungeonNiceState.COLLAPSING_OLD:
-                break;
-
-            case BuildingDungeonNiceState.CREATING_NEW:
-                break;
-
-            case BuildingDungeonNiceState.TURNING_PAGE:
-                break;
-
-            case BuildingDungeonNiceState.EXPANDING_NEW:
+                cameraFollowEntity.AnimateTo(new Vector3(16, 32, 0), new Vector3(16, 0, 16), MOVE_CAMERA_TIME);
                 break;
 
             case BuildingDungeonNiceState.MOVING_CAMERA_IN:
@@ -219,6 +184,11 @@ public class DungeonManager : MonoBehaviour
 
         buildingDungeonNiceState = newState;
         buildingDungeonNiceTime = 0.0f;
+    }
+
+    public bool IsBusy()
+    {
+        return buildingDungeonNice;
     }
 
 }
