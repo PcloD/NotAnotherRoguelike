@@ -215,7 +215,7 @@ public class DungeonManager : MonoBehaviour
         {
             case BuildingDungeonNiceState.MOVING_CAMERA_AWAY:
             case BuildingDungeonNiceState.MOVING_CAMERA_AWAY_AND_COLLAPSING_OLD:
-                cameraFollowEntity.AnimateTo(new Vector3(16, 32, 0), new Vector3(16, 0, 16), MOVE_CAMERA_TIME);
+                cameraFollowEntity.AnimateTo(new Vector3(16, 32, -8), new Vector3(16, 0, 16), MOVE_CAMERA_TIME);
                 break;
 
             case BuildingDungeonNiceState.MOVING_CAMERA_IN:
