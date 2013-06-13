@@ -10,14 +10,18 @@ public class DungeonManager : MonoBehaviour
     {
         MOVING_CAMERA_AWAY,
         COLLAPSING_OLD,
+        MOVING_CAMERA_AWAY_AND_COLLAPSING_OLD,
         CREATING_NEW_1,
         CREATING_NEW_2,
         CREATING_NEW_3,
         CREATING_NEW_4,
         TURNING_PAGE,
         EXPANDING_NEW,
-        MOVING_CAMERA_IN
+        MOVING_CAMERA_IN,
+        MOVING_CAMERA_IN_AND_EXPANDING_NEW
     }
+
+    public bool moveAndZoomWhileBuilding = true;
 
     public int sizeX = 32;
     public int sizeY = 32;
@@ -33,6 +37,7 @@ public class DungeonManager : MonoBehaviour
     private bool buildingDungeonNice;
     private float buildingDungeonNiceTime;
     private BuildingDungeonNiceState buildingDungeonNiceState;
+    private Vector3 buildingDungeonNiceNewAvatarPosition;
 
     public void Start()
     {
@@ -83,7 +88,10 @@ public class DungeonManager : MonoBehaviour
 
         cameraFollowEntity.entity = null;
 
-        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_AWAY);
+        if (moveAndZoomWhileBuilding)
+            SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_AWAY_AND_COLLAPSING_OLD);
+        else
+            SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_AWAY);
     }
 
     public void Update()
@@ -93,7 +101,7 @@ public class DungeonManager : MonoBehaviour
             switch (buildingDungeonNiceState)
             {
                 case BuildingDungeonNiceState.MOVING_CAMERA_AWAY:
-                    if (buildingDungeonNiceTime > MOVE_CAMERA_TIME)
+                    if (!cameraFollowEntity.IsBusy())
                         SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.COLLAPSING_OLD);
                     break;
 
@@ -101,6 +109,16 @@ public class DungeonManager : MonoBehaviour
                     dungeonUnity.transform.localScale = new Vector3(1.0f, Mathf.Max(0.0f, 1.0f - buildingDungeonNiceTime / COLLAPSE_TIME), 1.0f);
                     dungeonUnity.transform.position = new Vector3(0.0f, -(buildingDungeonNiceTime / COLLAPSE_TIME) * 0.5f, 0.0f);
                     if (dungeonUnity.transform.localScale.y == 0.0f)
+                    {
+                        dungeonUnity.gameObject.SetActive(false);
+                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_1);
+                    }
+                    break;
+
+                case BuildingDungeonNiceState.MOVING_CAMERA_AWAY_AND_COLLAPSING_OLD:
+                    dungeonUnity.transform.localScale = new Vector3(1.0f, Mathf.Max(0.0f, 1.0f - buildingDungeonNiceTime / COLLAPSE_TIME), 1.0f);
+                    dungeonUnity.transform.position = new Vector3(0.0f, -(buildingDungeonNiceTime / COLLAPSE_TIME) * 0.5f, 0.0f);
+                    if (dungeonUnity.transform.localScale.y == 0.0f && !cameraFollowEntity.IsBusy())
                     {
                         dungeonUnity.gameObject.SetActive(false);
                         SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.CREATING_NEW_1);
@@ -118,6 +136,8 @@ public class DungeonManager : MonoBehaviour
                     dungeonUnity.transform.position = Vector3.zero;
 
                     BuildDungeon(false);
+
+                    buildingDungeonNiceNewAvatarPosition = dungeonUnity.avatar.trans.position;
 
                     dungeonUnity.gameObject.SetActive(false);
                     dungeonUnity.transform.localScale = new Vector3(1.0f, 0.0f, 1.0f);
@@ -143,7 +163,12 @@ public class DungeonManager : MonoBehaviour
                         buildingDungeonNiceTime / ROTATE_PAGE_TIME);
 
                     if (buildingDungeonNiceTime >= ROTATE_PAGE_TIME)
-                        SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.EXPANDING_NEW);
+                    {
+                        if (moveAndZoomWhileBuilding)
+                            SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.MOVING_CAMERA_IN_AND_EXPANDING_NEW);
+                        else
+                            SwitchBuildingDungeonNiceState(BuildingDungeonNiceState.EXPANDING_NEW);
+                    }
                     break;
 
                 case BuildingDungeonNiceState.EXPANDING_NEW:
@@ -155,10 +180,25 @@ public class DungeonManager : MonoBehaviour
                     break;
 
                 case BuildingDungeonNiceState.MOVING_CAMERA_IN:
-                    if (buildingDungeonNiceTime > MOVE_CAMERA_TIME)
+                    if (!cameraFollowEntity.IsBusy())
                     {
                         buildingDungeonNice = false;
                         dungeonBook.movingPage.localRotation = Quaternion.identity;
+                        cameraFollowEntity.entity = dungeonUnity.avatar;
+                        cameraMap.entity = dungeonUnity.avatar;
+                        dungeonBook.DrawOldDungeon(dungeonUnity.dungeon);
+                    }
+                    break;
+
+                case BuildingDungeonNiceState.MOVING_CAMERA_IN_AND_EXPANDING_NEW:
+                    dungeonUnity.gameObject.SetActive(true);
+                    dungeonUnity.transform.localScale = new Vector3(1.0f, Mathf.Min(1.0f, buildingDungeonNiceTime / COLLAPSE_TIME), 1.0f);
+                    dungeonUnity.transform.position = new Vector3(0.0f, Mathf.Min(0.0f, (buildingDungeonNiceTime / COLLAPSE_TIME) * 0.5f - 0.5f), 0.0f);
+                    if (dungeonUnity.transform.localScale.y == 1.0f && !cameraFollowEntity.IsBusy())
+                    {
+                        buildingDungeonNice = false;
+                        dungeonBook.movingPage.localRotation = Quaternion.identity;
+                        cameraFollowEntity.entity = dungeonUnity.avatar;
                         cameraMap.entity = dungeonUnity.avatar;
                         dungeonBook.DrawOldDungeon(dungeonUnity.dungeon);
                     }
@@ -174,11 +214,13 @@ public class DungeonManager : MonoBehaviour
         switch (newState)
         {
             case BuildingDungeonNiceState.MOVING_CAMERA_AWAY:
+            case BuildingDungeonNiceState.MOVING_CAMERA_AWAY_AND_COLLAPSING_OLD:
                 cameraFollowEntity.AnimateTo(new Vector3(16, 32, 0), new Vector3(16, 0, 16), MOVE_CAMERA_TIME);
                 break;
 
             case BuildingDungeonNiceState.MOVING_CAMERA_IN:
-                cameraFollowEntity.AnimateTo(dungeonUnity.avatar, MOVE_CAMERA_TIME);
+            case BuildingDungeonNiceState.MOVING_CAMERA_IN_AND_EXPANDING_NEW:
+                cameraFollowEntity.AnimateTo(buildingDungeonNiceNewAvatarPosition, MOVE_CAMERA_TIME);
                 break;
         }    
 
