@@ -157,7 +157,7 @@ public class DungeonTileUnity : MonoBehaviour
         }
     }
 
-    static public bool IsSideVisible(Dungeon dungeon, DungeonVector2 position, DungeonTileSideType sideType)
+    static public bool IsSideVisible(DungeonMap dungeon, DungeonVector2 position, DungeonTileSideType sideType)
     {
         switch (sideType)
         {
@@ -196,7 +196,7 @@ public class DungeonTileUnity : MonoBehaviour
 
         return true;
     }
-    static public bool IsSideNonSolid(Dungeon dungeon, DungeonVector2 position, DungeonTileSideType sideType)
+    static public bool IsSideNonSolid(DungeonMap dungeon, DungeonVector2 position, DungeonTileSideType sideType)
     {
         switch (sideType)
         {

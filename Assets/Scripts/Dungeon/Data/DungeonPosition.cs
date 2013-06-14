@@ -42,6 +42,24 @@ public struct DungeonVector2
         }
     }
 
+    
+    static public DungeonVector2 FromRotation(DungeonRotation rotation)
+    {
+        switch (rotation)
+        {
+            case DungeonRotation.North:
+                return Forward;
+            case DungeonRotation.South:
+                return Back;
+            case DungeonRotation.East:
+                return Right;
+            case DungeonRotation.West:
+                return Left;
+        }
+
+        return new DungeonVector2();
+    }
+
     static public DungeonVector2 Forward
     {
         get { return new DungeonVector2(0, 1); }
@@ -70,6 +88,11 @@ public struct DungeonVector2
     public static DungeonVector2 operator-(DungeonVector2 a, DungeonVector2 b)
     {
         return new DungeonVector2(a.x - b.x, a.y - b.y);
+    }
+
+    public static DungeonVector2 operator-(DungeonVector2 a)
+    {
+        return new DungeonVector2(-a.x, -a.y);
     }
 
     public static bool operator!=(DungeonVector2 a, DungeonVector2 b)

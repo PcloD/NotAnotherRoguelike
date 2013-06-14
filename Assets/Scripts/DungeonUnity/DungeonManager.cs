@@ -58,12 +58,12 @@ public class DungeonManager : MonoBehaviour
 
         builder.Build();
 
-        Dungeon dungeon = builder.GetDungeon();
+        DungeonMap dungeon = builder.GetDungeon();
 
         SetDungeon(dungeon, updateCamera);
     }
 
-    public void SetDungeon(Dungeon dungeon, bool updateCamera = true)
+    public void SetDungeon(DungeonMap dungeon, bool updateCamera = true)
     {
         dungeonUnity.SetDungeon(dungeon);
 
@@ -84,6 +84,7 @@ public class DungeonManager : MonoBehaviour
         buildingDungeonNice = true;
 
         cameraFollowEntity.gameObject.SetActive(true);
+        cameraFollowEntity.firstPerson = false;
         cameraMap.gameObject.SetActive(false);
 
         cameraFollowEntity.entity = null;

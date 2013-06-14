@@ -2,7 +2,7 @@ using System;
 
 public class DungeonBuilder
 {
-    private Dungeon dungeon;
+    private DungeonMap dungeon;
     private IDungeonGenerator generator;
     private IRoomDecorator roomDecorator;
 
@@ -43,11 +43,11 @@ public class DungeonBuilder
             DungeonRotation.North);
     }
 
-    public Dungeon GetDungeon()
+    public DungeonMap GetDungeon()
     {
         dungeon.UpdateVisibility();
 
-        Dungeon toReturn = dungeon;
+        DungeonMap toReturn = dungeon;
 
         dungeon = null;
         generator = null;

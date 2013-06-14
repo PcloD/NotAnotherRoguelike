@@ -10,7 +10,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
     public DungeonTileSideUnityFactory tilesSideFactory;
     public DungeonShadowUnityPool shadowTilesPool;
 
-    public Dungeon dungeon;
+    public DungeonMap dungeon;
 
     private DungeonTileUnity[] tiles;
     private DungeonShadowUnity[] shadowTiles;
@@ -51,7 +51,7 @@ public class DungeonUnity : MonoBehaviour, IDungeonListener
         combinedTilesContainer.localRotation = Quaternion.identity;
     }
 
-    public void SetDungeon(Dungeon dungeon)
+    public void SetDungeon(DungeonMap dungeon)
     {
         Clear();
 

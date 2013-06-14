@@ -36,17 +36,17 @@ public class DungeonBook : MonoBehaviour
         oldPageRenderer.material.mainTexture = oldDungeonTexture;
     }
 
-    public void DrawNewDungeon(Dungeon dungeon)
+    public void DrawNewDungeon(DungeonMap dungeon)
     {
         DrawDungeon(newDungeonTexture, dungeon);
     }
 
-    public void DrawOldDungeon(Dungeon dungeon)
+    public void DrawOldDungeon(DungeonMap dungeon)
     {
         DrawDungeon(oldDungeonTexture, dungeon);
     }
 
-    private void DrawDungeon(Texture2D texture, Dungeon dungeon)
+    private void DrawDungeon(Texture2D texture, DungeonMap dungeon)
     {
         System.Array.Copy(emptyPagePixels, tmpPagePixels, emptyPagePixels.Length);
 

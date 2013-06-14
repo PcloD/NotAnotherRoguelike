@@ -19,7 +19,7 @@ public class DungeonRoom
 {
     public const int MIN_SIZE = 4;
 
-    private Dungeon dungeon;
+    private DungeonMap dungeon;
 
     private int roomPositionX;
     private int roomPositionY;
@@ -46,12 +46,12 @@ public class DungeonRoom
         get { return roomSizeY; }
     }
 
-    public Dungeon Dungeon
+    public DungeonMap Dungeon
     {
         get { return dungeon; }
     }
 
-    public DungeonRoom(Dungeon dungeon, int x, int y, int sizeX, int sizeY)
+    public DungeonRoom(DungeonMap dungeon, int x, int y, int sizeX, int sizeY)
     {
         this.dungeon = dungeon;
 

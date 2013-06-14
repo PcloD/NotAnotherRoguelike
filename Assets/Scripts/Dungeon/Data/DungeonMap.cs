@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-public class Dungeon
+public class DungeonMap
 {
     private DungeonTile[] tiles;
     private int dungeonSizeX;

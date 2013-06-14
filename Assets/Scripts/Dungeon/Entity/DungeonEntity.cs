@@ -3,7 +3,7 @@ using System;
 public abstract class DungeonEntity
 {
     private int id;
-    private Dungeon dungeon;
+    private DungeonMap dungeon;
     private DungeonVector2 position;
     private DungeonEntityType type;
     private DungeonRotation rotation;
@@ -18,7 +18,7 @@ public abstract class DungeonEntity
         get { return rotation; }
     }
 
-    public Dungeon Dungeon
+    public DungeonMap Dungeon
     {
         get { return dungeon; }
     }
@@ -33,12 +33,22 @@ public abstract class DungeonEntity
         get { return id; }
     }
 
+    public DungeonVector2 Forward
+    {
+        get { return DungeonVector2.FromRotation(rotation); }
+    }
+
+    public DungeonVector2 Back
+    {
+        get { return -DungeonVector2.FromRotation(rotation); }
+    }
+
     public DungeonEntity(DungeonEntityType type)
     {
         this.type = type;
     }
 
-    internal void OnAddedToDungeon(Dungeon dungeon, DungeonVector2 position, DungeonRotation rotation, int id)
+    internal void OnAddedToDungeon(DungeonMap dungeon, DungeonVector2 position, DungeonRotation rotation, int id)
     {
         this.dungeon = dungeon;
         this.position = position;

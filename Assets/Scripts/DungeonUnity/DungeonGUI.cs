@@ -27,15 +27,26 @@ public class DungeonGUI : MonoBehaviour
 
         if (GUI.Button(new Rect(Screen.width - size - 10, Screen.height - size - 10, size, size), "Camera"))
         {
-            if (dungeonManager.cameraFollowEntity.gameObject.activeSelf)
+            if (dungeonManager.cameraFollowEntity.gameObject.activeSelf && !dungeonManager.cameraFollowEntity.firstPerson)
+            {
+                dungeonManager.cameraFollowEntity.firstPerson = true;
+
+                dungeonManager.dungeonUnity.avatar.model.SetActive(false);
+            }
+            else if (dungeonManager.cameraFollowEntity.gameObject.activeSelf && dungeonManager.cameraFollowEntity.firstPerson)
             {
                 dungeonManager.cameraFollowEntity.gameObject.SetActive(false);
                 dungeonManager.cameraMap.gameObject.SetActive(true);
+
+                dungeonManager.dungeonUnity.avatar.model.SetActive(true);
             }
             else
             {
                 dungeonManager.cameraFollowEntity.gameObject.SetActive(true);
+                dungeonManager.cameraFollowEntity.firstPerson = false;
                 dungeonManager.cameraMap.gameObject.SetActive(false);
+
+                dungeonManager.dungeonUnity.avatar.model.SetActive(true);
             }
         }
 
@@ -78,31 +89,105 @@ public class DungeonGUI : MonoBehaviour
         MoveAvatar(horizontal, vertical);
     }
 
-    private void MoveAvatar(float horizontal, float vertical)
+    private bool CanMoveAvatar()
     {
         //No input handling while the dungeon is updating
         if (!dungeonManager.dungeonUnity ||
             dungeonManager.dungeonUnity.IsBusy() ||
             !dungeonManager.dungeonUnity.avatar)
         {
-            return;
+            return false;
         }
 
-        if (horizontal == 0 && vertical == 0)
+        return true;
+    }
+
+    private void RotateAvatar(float direction)
+    {
+        if (!CanMoveAvatar())
             return;
 
-        if (horizontal > 0)
-            dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Right);
-        else if (horizontal < 0)
-            dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Left);
-        else if (vertical > 0)
-            dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Forward);
-        else if (vertical < 0)
-            dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Back);
+        if (direction == 0.0f)
+            return;
+
+        dungeonManager.dungeonUnity.UpdateVisibility();
+
+        if (direction > 0)
+        {
+            int n = (int)dungeonManager.dungeonUnity.avatar.avatar.Rotation;
+            n = (n + 1) % 4;
+            dungeonManager.dungeonUnity.avatar.avatar.Rotate((DungeonRotation) n);
+        }
+        else
+        {
+            int n = (int)dungeonManager.dungeonUnity.avatar.avatar.Rotation;
+
+            n = (n - 1);
+            if (n < 0)
+                n += 4;
+
+            dungeonManager.dungeonUnity.avatar.avatar.Rotate((DungeonRotation) n);
+        }
 
         dungeonManager.dungeonUnity.UpdateVisibility();
     }
 
+    private void MoveForward()
+    {
+        if (!CanMoveAvatar())
+            return;
+
+        dungeonManager.dungeonUnity.avatar.avatar.Walk(dungeonManager.dungeonUnity.avatar.avatar.Forward);
+
+        dungeonManager.dungeonUnity.UpdateVisibility();
+    }
+
+    private void MoveBack()
+    {
+        if (!CanMoveAvatar())
+            return;
+
+        dungeonManager.dungeonUnity.avatar.avatar.Walk(dungeonManager.dungeonUnity.avatar.avatar.Back, false);
+
+        dungeonManager.dungeonUnity.UpdateVisibility();
+    }
+
+    private void MoveAvatar(float horizontal, float vertical)
+    {
+        if (!CanMoveAvatar())
+            return;
+
+        if (horizontal == 0 && vertical == 0)
+            return;
+
+        bool firstPerson = (dungeonManager.cameraFollowEntity.gameObject.activeSelf && dungeonManager.cameraFollowEntity.firstPerson);
+
+        if (firstPerson)
+        {
+            if (horizontal > 0)
+                RotateAvatar(1.0f);
+            else if (horizontal < 0)
+                RotateAvatar(-1.0f);
+
+            if (vertical > 0)
+                MoveForward();
+            else
+                MoveBack();
+        }
+        else
+        {
+            if (horizontal > 0)
+                dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Right);
+            else if (horizontal < 0)
+                dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Left);
+            else if (vertical > 0)
+                dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Forward);
+            else if (vertical < 0)
+                dungeonManager.dungeonUnity.avatar.avatar.Walk(DungeonVector2.Back);
+
+            dungeonManager.dungeonUnity.UpdateVisibility();
+        }
+    }
 }
 
 

@@ -4,9 +4,9 @@ public class DungeonGeneratorEmpty : IDungeonGenerator
 {
     private const int MAX_ROOM_SIZE = 12;
 
-    public Dungeon BuildDungeon(int sizeX, int sizeY)
+    public DungeonMap BuildDungeon(int sizeX, int sizeY)
     {
-        Dungeon dungeon = new Dungeon();
+        DungeonMap dungeon = new DungeonMap();
 
         dungeon.Init(sizeX, sizeY, DungeonTile.WallTile);
 

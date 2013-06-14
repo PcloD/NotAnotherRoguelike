@@ -1,9 +1,10 @@
 using System;
 
+//Clickwise order
 public enum DungeonRotation
 {
     North,
-    South,
     East, //Right!
+    South,
     West, //Left!
 }

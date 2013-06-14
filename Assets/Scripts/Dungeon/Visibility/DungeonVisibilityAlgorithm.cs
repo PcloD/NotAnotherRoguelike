@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 public class DungeonVisibilityAlgorithm
 {
-    public void Reset(Dungeon dungeon)
+    public void Reset(DungeonMap dungeon)
     {
         for (int x = 0; x < dungeon.SizeX; x++)
             for (int y = 0; y < dungeon.SizeY; y++)
                 dungeon.SetTileVisible(x, y, false);
     }
 
-    public void SetVisible(Dungeon dungeon, int lightX, int lightY, int lightRadius)
+    public void SetVisible(DungeonMap dungeon, int lightX, int lightY, int lightRadius)
     {
         for (int x = 0; x < dungeon.SizeX; x++)
         {
@@ -34,7 +34,7 @@ public class DungeonVisibilityAlgorithm
         }
     }
 
-    public bool IsVisible(Dungeon dungeon, int fromX, int fromY, int toX, int toY, int offsetX = 50, int offsetY = 50)
+    public bool IsVisible(DungeonMap dungeon, int fromX, int fromY, int toX, int toY, int offsetX = 50, int offsetY = 50)
     {
         int steps;
         int deltaX = toX - fromX;

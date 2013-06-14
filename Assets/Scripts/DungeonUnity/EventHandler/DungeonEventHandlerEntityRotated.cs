@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class DungeonEventHandlerEntityRotated : DungeonEventHandlerUnity
 {
-    private const float ROTATE_TIME = 0.1f;
+    private const float ROTATE_TIME = 0.25f;
 
     private DungeonEntityUnity entity;
     private Quaternion rotateFrom;

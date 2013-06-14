@@ -23,12 +23,13 @@ public class DungeonEntityAvatar : DungeonEntity
         return true;
     }
 
-    public bool Walk(DungeonVector2 delta)
+    public bool Walk(DungeonVector2 delta, bool rotate = true)
     {
         if (!CanWalk(delta))
             return false;
 
-        Rotate(delta.GetRotation());
+        if (rotate)
+            Rotate(delta.GetRotation());
 
         MoveTo(Position + delta);
 

@@ -4,8 +4,10 @@ public class CameraFollowEntity : MonoBehaviour
 {
     public Vector3 moveDelta;
     public Vector3 lookAtDelta;
+    public Vector3 firstPersonDelta = new Vector3(0.0f, 0.5f, 0.0f);
 
     public DungeonEntityUnity entity;
+    public bool firstPerson;
 
     private Vector3 lastPosition;
     private Vector3 lastLookAtPosition;
@@ -28,11 +30,19 @@ public class CameraFollowEntity : MonoBehaviour
     {
         if (entity)
         {
-            lastPosition = entity.trans.position + moveDelta;
-            lastLookAtPosition = entity.trans.position + lookAtDelta;
+            if (firstPerson)
+            {
+                trans.position = entity.trans.position + firstPersonDelta;
+                trans.LookAt(trans.position + entity.trans.forward);
+            }
+            else
+            {
+                lastPosition = entity.trans.position + moveDelta;
+                lastLookAtPosition = entity.trans.position + lookAtDelta;
 
-            trans.position = lastPosition;
-            trans.LookAt(lastLookAtPosition);
+                trans.position = lastPosition;
+                trans.LookAt(lastLookAtPosition);
+            }
         }
         else if (animating)
         {
